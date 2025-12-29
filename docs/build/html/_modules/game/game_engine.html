@@ -1,0 +1,923 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game.game_engine &mdash; документация Змейка 1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=9ca2116e"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=cd1d70c9"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="../../genindex.html" />
+    <link rel="search" title="Поиск" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Змейка
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Модули</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Змейка</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Код модуля</a></li>
+      <li class="breadcrumb-item active">game.game_engine</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Исходный код game.game_engine</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Игровой движок для Змейки.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">Any</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.snake</span><span class="w"> </span><span class="kn">import</span> <span class="n">Snake</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.apple</span><span class="w"> </span><span class="kn">import</span> <span class="n">Apple</span>
+
+
+<div class="viewcode-block" id="GameEngine">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameEngine">[документация]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameEngine</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Управляет игровым процессом.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        width (int): Ширина игрового поля.</span>
+<span class="sd">        height (int): Высота игрового поля.</span>
+<span class="sd">        grid_size (int): Размер сетки.</span>
+<span class="sd">        fps (int): Кадров в секунду.</span>
+<span class="sd">        snake_speed (int): Скорость движения змейки.</span>
+<span class="sd">        player_name (str): Имя игрока.</span>
+<span class="sd">        fullscreen (bool): Режим полноэкранный или оконный.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GameEngine.__init__">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameEngine.__init__">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">width</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">800</span><span class="p">,</span> <span class="n">height</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">600</span><span class="p">,</span>
+                 <span class="n">grid_size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">40</span><span class="p">,</span> <span class="n">fps</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">60</span><span class="p">,</span>
+                 <span class="n">snake_speed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">player_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;Игрок&quot;</span><span class="p">,</span>
+                 <span class="n">fullscreen</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Инициализирует игровой движок.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            width (int): Ширина поля.</span>
+<span class="sd">            height (int): Высота поля.</span>
+<span class="sd">            grid_size (int): Размер сетки.</span>
+<span class="sd">            fps (int): Кадров в секунду.</span>
+<span class="sd">            snake_speed (int): Скорость змейки.</span>
+<span class="sd">            player_name (str): Имя игрока.</span>
+<span class="sd">            fullscreen (bool): Режим полноэкранный.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="c1"># Получаем разрешение экрана</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="n">fullscreen</span>
+        <span class="n">screen_info</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Info</span><span class="p">()</span>
+
+        <span class="c1"># Сохраняем РЕАЛЬНЫЕ размеры игрового поля из настроек</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_width</span> <span class="o">=</span> <span class="n">width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">original_height</span> <span class="o">=</span> <span class="n">height</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span> <span class="o">=</span> <span class="n">grid_size</span>  <span class="c1"># Фиксированный размер сетки 40</span>
+
+        <span class="c1"># Выравниваем размеры под сетку</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_width</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_width</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">original_height</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">)</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+
+        <span class="c1"># Разделяем экран на игровое поле и панель статистики</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_height</span> <span class="o">=</span> <span class="mi">120</span>  <span class="c1"># Высота панели статистики</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_width</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">display_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_height</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">fps</span> <span class="o">=</span> <span class="n">fps</span>  <span class="c1"># Фиксированная частота кадров 60</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snake_speed</span> <span class="o">=</span> <span class="n">snake_speed</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_name</span> <span class="o">=</span> <span class="n">player_name</span>
+
+        <span class="c1"># Создаем окно</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="n">screen_info</span><span class="o">.</span><span class="n">current_w</span><span class="p">,</span> <span class="n">screen_info</span><span class="o">.</span><span class="n">current_h</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">=</span> <span class="n">screen_info</span><span class="o">.</span><span class="n">current_w</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">=</span> <span class="n">screen_info</span><span class="o">.</span><span class="n">current_h</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_height</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_height</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Змейка - </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">player_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+        <span class="c1"># Поверхность для отрисовки игры (с фиксированным размером ИЗ НАСТРОЕК)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_height</span><span class="p">))</span>
+
+        <span class="c1"># Загружаем шрифты</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">big_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="mi">72</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">28</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">big_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">42</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">72</span><span class="p">)</span>
+
+        <span class="c1"># Цвета игрового поля (шахматный порядок)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color1</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#4682B4&#39;</span><span class="p">)</span>  <span class="c1"># Стальной синий</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">color2</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#B0E0E6&#39;</span><span class="p">)</span>  <span class="c1"># Голубой порошок</span>
+
+        <span class="c1"># Цвета UI</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_bg_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#2C3E50&#39;</span><span class="p">)</span>  <span class="c1"># Темно-синий</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_text_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#ECF0F1&#39;</span><span class="p">)</span>  <span class="c1"># Светло-серый</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_accent_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#3498DB&#39;</span><span class="p">)</span>  <span class="c1"># Голубой</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_button_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#1ABC9C&#39;</span><span class="p">)</span>  <span class="c1"># Бирюзовый</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ui_button_hover_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#16A085&#39;</span><span class="p">)</span>  <span class="c1"># Темный бирюзовый</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">high_score</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_game</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_game</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Инициализирует игровые объекты.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Создаем змейку в центре игрового поля (ИСПОЛЬЗУЕМ game_width и game_height)</span>
+        <span class="n">start_x</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+        <span class="n">start_y</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_height</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+
+        <span class="c1"># Цвета змейки (зеленая гамма)</span>
+        <span class="n">head_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#00FF00&#39;</span><span class="p">)</span>  <span class="c1"># Ярко-зеленый</span>
+        <span class="n">body_color1</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#32CD32&#39;</span><span class="p">)</span>  <span class="c1"># Лаймовый зеленый</span>
+        <span class="n">body_color2</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#228B22&#39;</span><span class="p">)</span>  <span class="c1"># Лесной зеленый</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">snake</span> <span class="o">=</span> <span class="n">Snake</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">start_x</span><span class="p">,</span>
+            <span class="n">y</span><span class="o">=</span><span class="n">start_y</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">,</span>
+            <span class="n">length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
+            <span class="n">head_color</span><span class="o">=</span><span class="n">head_color</span><span class="p">,</span>
+            <span class="n">body_colors</span><span class="o">=</span><span class="p">[</span><span class="n">body_color1</span><span class="p">,</span> <span class="n">body_color2</span><span class="p">]</span>  <span class="c1"># Чередующиеся цвета</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Создаем яблоко (ИСПОЛЬЗУЕМ game_width и game_height)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apple</span> <span class="o">=</span> <span class="n">Apple</span><span class="o">.</span><span class="n">create_random</span><span class="p">(</span>
+            <span class="n">max_x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="p">,</span>
+            <span class="n">max_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">,</span>
+            <span class="n">size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">,</span>
+            <span class="n">grid_size</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Таймер для движения змейки</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_timer</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_delay</span> <span class="o">=</span> <span class="mi">1000</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">snake_speed</span>  <span class="c1"># мс между движениями</span>
+
+<div class="viewcode-block" id="GameEngine.handle_events">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameEngine.handle_events">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Обрабатывает события.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True если игра должна продолжаться, иначе False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                <span class="k">return</span> <span class="kc">False</span>
+
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+
+                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_f</span><span class="p">:</span>  <span class="c1"># Переключение полноэкранного режима</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_toggle_fullscreen</span><span class="p">()</span>
+
+                <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_SPACE</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">_init_game</span><span class="p">()</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span> <span class="o">=</span> <span class="kc">False</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">paused</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span>
+
+                <span class="k">elif</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">change_direction</span><span class="p">(</span><span class="n">event</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="kc">True</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_toggle_fullscreen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Переключает полноэкранный режим.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span> <span class="o">=</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">:</span>
+            <span class="n">screen_info</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Info</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="n">screen_info</span><span class="o">.</span><span class="n">current_w</span><span class="p">,</span> <span class="n">screen_info</span><span class="o">.</span><span class="n">current_h</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">FULLSCREEN</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_height</span><span class="p">))</span>
+
+<div class="viewcode-block" id="GameEngine.update">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameEngine.update">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dt</span><span class="p">:</span> <span class="nb">float</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Обновляет игровое состояние.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            dt (float): Время с последнего обновления в секундах.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="k">return</span>
+
+        <span class="c1"># Обновляем таймер движения</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">move_timer</span> <span class="o">+=</span> <span class="n">dt</span> <span class="o">*</span> <span class="mi">1000</span>  <span class="c1"># Преобразуем в миллисекунды</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_timer</span> <span class="o">&gt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">move_delay</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">move_timer</span> <span class="o">=</span> <span class="mi">0</span>
+
+            <span class="c1"># Двигаем змейку</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">move</span><span class="p">()</span>
+
+            <span class="c1"># Проверяем столкновение с яблоком (ИСПОЛЬЗУЕМ game_width и game_height)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">check_collision</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">apple</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">grow</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">apple</span><span class="o">.</span><span class="n">value</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">apple</span><span class="o">.</span><span class="n">respawn</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">)</span>
+
+                <span class="c1"># Обновляем рекорд</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">score</span> <span class="o">&gt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">high_score</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">high_score</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">score</span>
+
+            <span class="c1"># Проверяем столкновения (ИСПОЛЬЗУЕМ game_width и game_height)</span>
+            <span class="k">if</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">check_self_collision</span><span class="p">()</span> <span class="ow">or</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">check_wall_collision</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">)):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span> <span class="o">=</span> <span class="kc">True</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_save_result</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_save_result</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Сохраняет результат игры в файл.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;player&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_name</span><span class="p">,</span>
+            <span class="s1">&#39;score&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="p">,</span>
+            <span class="s1">&#39;length&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">get_length</span><span class="p">(),</span>
+            <span class="s1">&#39;timestamp&#39;</span><span class="p">:</span> <span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1"> %H:%M:%S&#39;</span><span class="p">),</span>
+            <span class="s1">&#39;speed&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">snake_speed</span><span class="p">,</span>
+            <span class="s1">&#39;field_size&#39;</span><span class="p">:</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">original_width</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">original_height</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="s1">&#39;grid_size&#39;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+        <span class="p">}</span>
+
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;results.txt&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;timestamp&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;player&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;Очки: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;score&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;Длина: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;length&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;Скорость: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;speed&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;Поле: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;field_size&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | &quot;</span>
+                   <span class="sa">f</span><span class="s2">&quot;Сетка: </span><span class="si">{</span><span class="n">result</span><span class="p">[</span><span class="s1">&#39;grid_size&#39;</span><span class="p">]</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GameEngine.draw">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameEngine.draw">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Отрисовывает игровое поле.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Очищаем игровую поверхность</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># Рисуем игровое поле (шахматный порядок)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_game_board</span><span class="p">()</span>
+
+        <span class="c1"># Рисуем игровые объекты</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">apple</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">)</span>
+
+        <span class="c1"># Рисуем панель статистики</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_ui_panel</span><span class="p">()</span>
+
+        <span class="c1"># Рисуем сообщения поверх всего</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_messages</span><span class="p">()</span>
+
+        <span class="c1"># Масштабируем и центрируем на основном экране</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_to_screen</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_to_screen</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Рисует игровую поверхность на основном экране.&quot;&quot;&quot;</span>
+        <span class="c1"># Очищаем основной экран</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fullscreen</span><span class="p">:</span>
+            <span class="c1"># В полноэкранном режиме масштабируем всю поверхность целиком</span>
+            <span class="n">scale_factor</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_height</span>
+            <span class="p">)</span>
+
+            <span class="n">scaled_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
+            <span class="n">scaled_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_height</span> <span class="o">*</span> <span class="n">scale_factor</span><span class="p">)</span>
+
+            <span class="n">scaled_surface</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">transform</span><span class="o">.</span><span class="n">scale</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">,</span> <span class="p">(</span><span class="n">scaled_width</span><span class="p">,</span> <span class="n">scaled_height</span><span class="p">))</span>
+
+            <span class="c1"># Центрируем отмасштабированную поверхность</span>
+            <span class="n">x_pos</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">-</span> <span class="n">scaled_width</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+            <span class="n">y_pos</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">-</span> <span class="n">scaled_height</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">scaled_surface</span><span class="p">,</span> <span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="n">y_pos</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># В оконном режиме просто отображаем</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+        <span class="c1"># Обновляем экран</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_game_board</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Рисует игровое поле в шахматном порядке.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cols</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_width</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>  <span class="c1"># ИСПОЛЬЗУЕМ game_width</span>
+        <span class="n">rows</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span> <span class="o">//</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>  <span class="c1"># ИСПОЛЬЗУЕМ game_height</span>
+
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">rows</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">cols</span><span class="p">):</span>
+                <span class="c1"># Определяем цвет клетки (шахматный порядок)</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">row</span> <span class="o">+</span> <span class="n">col</span><span class="p">)</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color2</span>
+
+                <span class="c1"># Рисуем клетку</span>
+                <span class="n">rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+                    <span class="n">col</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">,</span>
+                    <span class="n">row</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span><span class="p">,</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">grid_size</span>
+                <span class="p">)</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">rect</span><span class="p">)</span>
+
+                <span class="c1"># Добавляем легкую обводку</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="mi">40</span><span class="p">),</span> <span class="n">rect</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_ui_panel</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Рисует панель статистики.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Фон панели статистики (ИСПОЛЬЗУЕМ display_width)</span>
+        <span class="n">ui_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_height</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_bg_color</span><span class="p">,</span> <span class="n">ui_rect</span><span class="p">)</span>
+
+        <span class="c1"># Разделительная линия</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_accent_color</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">),</span> <span class="mi">3</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Текст статистики</span>
+        <span class="n">y_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span> <span class="o">+</span> <span class="mi">10</span>
+
+        <span class="c1"># Имя игрока и скорость</span>
+        <span class="n">player_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Игрок: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">player_name</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_text_color</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">player_text</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+
+        <span class="n">speed_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Скорость: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">snake_speed</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_text_color</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">speed_text</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span> <span class="o">//</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+
+        <span class="c1"># Размер поля (показываем РЕАЛЬНЫЕ размеры)</span>
+        <span class="n">field_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Поле: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">original_width</span><span class="si">}</span><span class="s1">x</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">original_height</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">ui_text_color</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">field_text</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span> <span class="o">//</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+
+        <span class="c1"># Счет и рекорд</span>
+        <span class="n">y_offset</span> <span class="o">+=</span> <span class="mi">40</span>
+
+        <span class="n">score_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Очки: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">score_text</span><span class="p">,</span> <span class="p">(</span><span class="mi">20</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+
+        <span class="n">high_score_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Рекорд: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">high_score</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">high_score_text</span><span class="p">,</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">display_width</span> <span class="o">//</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+
+        <span class="c1"># Длина змейки</span>
+        <span class="n">length_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s1">&#39;Длина: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">length_text</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">display_width</span> <span class="o">//</span> <span class="mi">3</span><span class="p">,</span> <span class="n">y_offset</span><span class="p">))</span>
+
+        <span class="c1"># Убраны подсказки по управлению</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_messages</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Рисует сообщения поверх игрового поля.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">paused</span><span class="p">:</span>
+            <span class="c1"># Полупрозрачный фон (ИСПОЛЬЗУЕМ game_width и game_height)</span>
+            <span class="n">overlay</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">overlay</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">))</span>  <span class="c1"># Полупрозрачный черный</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="n">pause_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">big_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;ПАУЗА&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+            <span class="n">text_rect</span> <span class="o">=</span> <span class="n">pause_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">pause_text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+            <span class="n">hint_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                <span class="s1">&#39;Нажмите ПРОБЕЛ чтобы продолжить&#39;</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">hint_rect</span> <span class="o">=</span> <span class="n">hint_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="o">//</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">50</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">hint_text</span><span class="p">,</span> <span class="n">hint_rect</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_over</span><span class="p">:</span>
+            <span class="c1"># Полупрозрачный фон (ИСПОЛЬЗУЕМ game_width и game_height)</span>
+            <span class="n">overlay</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="p">),</span> <span class="n">pygame</span><span class="o">.</span><span class="n">SRCALPHA</span><span class="p">)</span>
+            <span class="n">overlay</span><span class="o">.</span><span class="n">fill</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">150</span><span class="p">))</span>  <span class="c1"># Полупрозрачный черный</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">overlay</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+
+            <span class="n">game_over_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">big_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;ИГРА ОКОНЧЕНА&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">))</span>
+            <span class="n">text_rect</span> <span class="o">=</span> <span class="n">game_over_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="o">//</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">50</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">game_over_text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+            <span class="n">score_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s1">&#39;Ваш счет: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">score</span><span class="si">}</span><span class="s1"> | Длина: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">snake</span><span class="o">.</span><span class="n">get_length</span><span class="p">()</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">score_rect</span> <span class="o">=</span> <span class="n">score_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="o">//</span><span class="mi">2</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">score_text</span><span class="p">,</span> <span class="n">score_rect</span><span class="p">)</span>
+
+            <span class="n">restart_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                <span class="s1">&#39;Нажмите ПРОБЕЛ чтобы начать заново&#39;</span><span class="p">,</span>
+                <span class="kc">True</span><span class="p">,</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">restart_rect</span> <span class="o">=</span> <span class="n">restart_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">game_width</span><span class="o">//</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">game_height</span><span class="o">//</span><span class="mi">2</span> <span class="o">+</span> <span class="mi">50</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">game_surface</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">restart_text</span><span class="p">,</span> <span class="n">restart_rect</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GameEngine.run">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameEngine.run">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Запускает основной игровой цикл.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fps</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.0</span>
+
+            <span class="n">running</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_events</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="GameLauncher">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameLauncher">[документация]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">GameLauncher</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Класс для настройки и запуска игры с меню выбора параметров.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="GameLauncher.__init__">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameLauncher.__init__">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Инициализирует лаунчер игры.&quot;&quot;&quot;</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">init</span><span class="p">()</span>
+
+        <span class="c1"># Получаем разрешение экрана для полноэкранного режима</span>
+        <span class="n">screen_info</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Info</span><span class="p">()</span>
+
+        <span class="c1"># Используем 90% от размера экрана для лаунчера</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">screen_info</span><span class="o">.</span><span class="n">current_w</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">screen_info</span><span class="o">.</span><span class="n">current_h</span> <span class="o">*</span> <span class="mf">0.9</span><span class="p">)</span>
+
+        <span class="c1"># Стандартные параметры</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span>
+            <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">600</span><span class="p">,</span>
+            <span class="s1">&#39;grid_size&#39;</span><span class="p">:</span> <span class="mi">40</span><span class="p">,</span>  <span class="c1"># Фиксированный размер сетки 40</span>
+            <span class="s1">&#39;fps&#39;</span><span class="p">:</span> <span class="mi">60</span><span class="p">,</span>  <span class="c1"># Фиксированная частота кадров 60</span>
+            <span class="s1">&#39;snake_speed&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;player_name&#39;</span><span class="p">:</span> <span class="s1">&#39;Игрок&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;fullscreen&#39;</span><span class="p">:</span> <span class="kc">True</span>  <span class="c1"># По умолчанию полноэкранный режим</span>
+        <span class="p">}</span>
+
+        <span class="c1"># Оконный режим для лаунчера</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_mode</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span><span class="p">))</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">set_caption</span><span class="p">(</span><span class="s1">&#39;Змейка - Настройка параметров&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">clock</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">time</span><span class="o">.</span><span class="n">Clock</span><span class="p">()</span>
+
+        <span class="c1"># Загружаем шрифты с адаптивными размерами</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">font_size_title</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">//</span> <span class="mi">12</span><span class="p">)</span>
+            <span class="n">font_size_normal</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">34</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">//</span> <span class="mi">26</span><span class="p">)</span>
+            <span class="n">font_size_button</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">38</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">//</span> <span class="mi">24</span><span class="p">)</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">title_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_size_title</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_size_normal</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">button_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">Font</span><span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="n">font_size_button</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">title_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">34</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">button_font</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">SysFont</span><span class="p">(</span><span class="s1">&#39;arial&#39;</span><span class="p">,</span> <span class="mi">38</span><span class="p">)</span>
+
+        <span class="c1"># Цвета</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bg_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#2C3E50&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#ECF0F1&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#3498DB&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">button_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#1ABC9C&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">button_hover_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#16A085&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#34495E&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_text_color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#FFFFFF&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Текущий редактируемый параметр</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="c1"># Кнопки выбора параметров</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_buttons</span><span class="p">()</span>
+
+        <span class="c1"># Ввод имени игрока</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;player_name&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">200</span><span class="p">,</span>
+            <span class="mi">200</span><span class="p">,</span>
+            <span class="mi">400</span><span class="p">,</span>
+            <span class="mi">50</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Параметры для быстрого выбора (только три уровня сложности)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">presets</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;ЛЕГКАЯ&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">600</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">400</span><span class="p">,</span> <span class="s1">&#39;speed&#39;</span><span class="p">:</span> <span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#27AE60&#39;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;СРЕДНЯЯ&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">600</span><span class="p">,</span> <span class="s1">&#39;speed&#39;</span><span class="p">:</span> <span class="mi">12</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#F39C12&#39;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;СЛОЖНАЯ&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">:</span> <span class="mi">1000</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">:</span> <span class="mi">800</span><span class="p">,</span> <span class="s1">&#39;speed&#39;</span><span class="p">:</span> <span class="mi">15</span><span class="p">,</span> <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="s1">&#39;#E74C3C&#39;</span><span class="p">}</span>
+        <span class="p">]</span>
+
+        <span class="c1"># Кнопки предустановок</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">preset_buttons</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_preset_buttons</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Инициализирует кнопки настройки параметров.&quot;&quot;&quot;</span>
+        <span class="n">button_y</span> <span class="o">=</span> <span class="mi">280</span>
+        <span class="n">button_width</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">90</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="n">button_height</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">//</span> <span class="mi">18</span><span class="p">)</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">80</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">//</span> <span class="mi">12</span><span class="p">)</span>
+
+        <span class="c1"># Только три параметра: ширина, высота и скорость</span>
+        <span class="c1"># Убраны: размер сетки (фиксирован 40) и частота кадров (фиксирована 60)</span>
+        <span class="n">parameters</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="p">(</span><span class="s1">&#39;ШИРИНА ПОЛЯ:&#39;</span><span class="p">,</span> <span class="s1">&#39;width&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;400&#39;</span><span class="p">,</span> <span class="s1">&#39;600&#39;</span><span class="p">,</span> <span class="s1">&#39;800&#39;</span><span class="p">,</span> <span class="s1">&#39;1000&#39;</span><span class="p">,</span> <span class="s1">&#39;1200&#39;</span><span class="p">,</span> <span class="s1">&#39;1400&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s1">&#39;ВЫСОТА ПОЛЯ:&#39;</span><span class="p">,</span> <span class="s1">&#39;height&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;300&#39;</span><span class="p">,</span> <span class="s1">&#39;400&#39;</span><span class="p">,</span> <span class="s1">&#39;600&#39;</span><span class="p">,</span> <span class="s1">&#39;800&#39;</span><span class="p">,</span> <span class="s1">&#39;900&#39;</span><span class="p">,</span> <span class="s1">&#39;1000&#39;</span><span class="p">]),</span>
+            <span class="p">(</span><span class="s1">&#39;СКОРОСТЬ:&#39;</span><span class="p">,</span> <span class="s1">&#39;snake_speed&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;5&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">,</span> <span class="s1">&#39;10&#39;</span><span class="p">,</span> <span class="s1">&#39;12&#39;</span><span class="p">,</span> <span class="s1">&#39;15&#39;</span><span class="p">,</span> <span class="s1">&#39;18&#39;</span><span class="p">,</span> <span class="s1">&#39;20&#39;</span><span class="p">,</span> <span class="s1">&#39;25&#39;</span><span class="p">])</span>
+        <span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">param_name</span><span class="p">,</span> <span class="n">options</span> <span class="ow">in</span> <span class="n">parameters</span><span class="p">:</span>
+            <span class="n">label_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">)</span>
+            <span class="n">label_rect</span> <span class="o">=</span> <span class="n">label_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">topleft</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="n">button_y</span><span class="p">))</span>
+
+            <span class="c1"># Кнопки для каждого значения</span>
+            <span class="n">option_buttons</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="n">x_pos</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">200</span>
+
+            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">options</span><span class="p">:</span>
+                <span class="n">btn_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x_pos</span><span class="p">,</span> <span class="n">button_y</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span><span class="p">)</span>
+                <span class="n">option_buttons</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                    <span class="s1">&#39;rect&#39;</span><span class="p">:</span> <span class="n">btn_rect</span><span class="p">,</span>
+                    <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">option</span><span class="p">,</span>
+                    <span class="s1">&#39;value&#39;</span><span class="p">:</span> <span class="nb">int</span><span class="p">(</span><span class="n">option</span><span class="p">),</span>
+                    <span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="n">param_name</span>
+                <span class="p">})</span>
+                <span class="n">x_pos</span> <span class="o">+=</span> <span class="n">button_width</span> <span class="o">+</span> <span class="mi">15</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;label&#39;</span><span class="p">:</span> <span class="n">label_text</span><span class="p">,</span>
+                <span class="s1">&#39;label_rect&#39;</span><span class="p">:</span> <span class="n">label_rect</span><span class="p">,</span>
+                <span class="s1">&#39;options&#39;</span><span class="p">:</span> <span class="n">option_buttons</span><span class="p">,</span>
+                <span class="s1">&#39;param&#39;</span><span class="p">:</span> <span class="n">param_name</span>
+            <span class="p">})</span>
+
+            <span class="n">button_y</span> <span class="o">+=</span> <span class="n">spacing</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_init_preset_buttons</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Инициализирует кнопки предустановок.&quot;&quot;&quot;</span>
+        <span class="n">button_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">-</span> <span class="mi">180</span>
+        <span class="n">button_width</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">220</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">button_height</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">60</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">//</span> <span class="mi">15</span><span class="p">)</span>
+        <span class="n">spacing</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">30</span><span class="p">)</span>
+
+        <span class="n">x_start</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="p">)</span> <span class="o">*</span> <span class="n">button_width</span> <span class="o">+</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">spacing</span><span class="p">))</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">preset</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">presets</span><span class="p">):</span>
+            <span class="n">btn_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">x_start</span> <span class="o">+</span> <span class="n">i</span> <span class="o">*</span> <span class="p">(</span><span class="n">button_width</span> <span class="o">+</span> <span class="n">spacing</span><span class="p">),</span> <span class="n">button_y</span><span class="p">,</span> <span class="n">button_width</span><span class="p">,</span> <span class="n">button_height</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">preset_buttons</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
+                <span class="s1">&#39;rect&#39;</span><span class="p">:</span> <span class="n">btn_rect</span><span class="p">,</span>
+                <span class="s1">&#39;text&#39;</span><span class="p">:</span> <span class="n">preset</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span>
+                <span class="s1">&#39;preset&#39;</span><span class="p">:</span> <span class="n">preset</span><span class="p">,</span>
+                <span class="s1">&#39;color&#39;</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="n">preset</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">])</span>
+            <span class="p">})</span>
+
+<div class="viewcode-block" id="GameLauncher.draw">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameLauncher.draw">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Отрисовывает экран настройки параметров.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">fill</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bg_color</span><span class="p">)</span>
+
+        <span class="c1"># Фоновый градиент или узор</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_draw_background</span><span class="p">()</span>
+
+        <span class="c1"># Заголовок</span>
+        <span class="n">title</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;НАСТРОЙКА ИГРЫ &quot;ЗМЕЙКА&quot;&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span><span class="p">)</span>
+        <span class="n">title_rect</span> <span class="o">=</span> <span class="n">title</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">120</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">title</span><span class="p">,</span> <span class="n">title_rect</span><span class="p">)</span>
+
+        <span class="c1"># Имя игрока</span>
+        <span class="n">name_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;ВАШЕ ИМЯ:&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">)</span>
+        <span class="n">name_label_rect</span> <span class="o">=</span> <span class="n">name_label</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">midright</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">-</span> <span class="mi">20</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">centery</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">name_label</span><span class="p">,</span> <span class="n">name_label_rect</span><span class="p">)</span>
+
+        <span class="c1"># Поле ввода имени</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_color</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+        <span class="n">name_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_text_color</span><span class="p">)</span>
+        <span class="n">text_rect</span> <span class="o">=</span> <span class="n">name_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">midleft</span><span class="o">=</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="mi">15</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">centery</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">name_text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+        <span class="c1"># Индикатор редактирования</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+            <span class="n">cursor_x</span> <span class="o">=</span> <span class="n">text_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">+</span> <span class="mi">5</span>
+            <span class="n">cursor_rect</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="n">cursor_x</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">height</span> <span class="o">-</span> <span class="mi">20</span><span class="p">)</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span> <span class="n">cursor_rect</span><span class="p">)</span>
+
+        <span class="c1"># Отображение параметров</span>
+        <span class="k">for</span> <span class="n">button_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">:</span>
+            <span class="c1"># Метка параметра</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">button_group</span><span class="p">[</span><span class="s1">&#39;label&#39;</span><span class="p">],</span> <span class="n">button_group</span><span class="p">[</span><span class="s1">&#39;label_rect&#39;</span><span class="p">])</span>
+
+            <span class="c1"># Кнопки значений</span>
+            <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">button_group</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]:</span>
+                <span class="c1"># Определяем цвет кнопки</span>
+                <span class="n">current_value</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">button_group</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]]</span>
+                <span class="n">is_selected</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_value</span> <span class="o">==</span> <span class="n">option</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">])</span>
+                <span class="n">is_hovered</span> <span class="o">=</span> <span class="n">option</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">())</span>
+
+                <span class="n">color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span> <span class="k">if</span> <span class="n">is_selected</span> <span class="k">else</span> <span class="p">(</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">button_hover_color</span> <span class="k">if</span> <span class="n">is_hovered</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_color</span>
+                <span class="p">)</span>
+
+                <span class="c1"># Рисуем кнопку с тенью</span>
+                <span class="n">shadow_rect</span> <span class="o">=</span> <span class="n">option</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+                <span class="n">shadow_rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="mi">3</span>
+                <span class="n">shadow_rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="mi">3</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">shadow_rect</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+                <span class="c1"># Основная кнопка</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">option</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">],</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+
+                <span class="c1"># Текст на кнопке</span>
+                <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">option</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">)</span>
+                <span class="n">text_rect</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">option</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+        <span class="c1"># Предустановки</span>
+        <span class="k">for</span> <span class="n">preset_btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_buttons</span><span class="p">:</span>
+            <span class="n">is_hovered</span> <span class="o">=</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">())</span>
+            <span class="n">color</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Color</span><span class="p">(</span><span class="s1">&#39;#FFFFFF&#39;</span><span class="p">)</span> <span class="k">if</span> <span class="n">is_hovered</span> <span class="k">else</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;color&#39;</span><span class="p">]</span>
+
+            <span class="c1"># Тень</span>
+            <span class="n">shadow_rect</span> <span class="o">=</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+            <span class="n">shadow_rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="mi">4</span>
+            <span class="n">shadow_rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="mi">4</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">shadow_rect</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+            <span class="c1"># Основная кнопка</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="n">color</span><span class="p">,</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">],</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+            <span class="c1"># Обводка</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">,</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">],</span> <span class="mi">3</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">8</span><span class="p">)</span>
+
+            <span class="c1"># Текст</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;text&#39;</span><span class="p">],</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bg_color</span><span class="p">)</span>
+            <span class="n">text_rect</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> <span class="n">text_rect</span><span class="p">)</span>
+
+            <span class="c1"># Информация о пресете</span>
+            <span class="k">if</span> <span class="n">is_hovered</span><span class="p">:</span>
+                <span class="n">preset</span> <span class="o">=</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;preset&#39;</span><span class="p">]</span>
+                <span class="n">info_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">preset</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">x</span><span class="si">{</span><span class="n">preset</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> | Скорость: </span><span class="si">{</span><span class="n">preset</span><span class="p">[</span><span class="s1">&#39;speed&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                    <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span>
+                <span class="p">)</span>
+                <span class="n">info_rect</span> <span class="o">=</span> <span class="n">info_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">midtop</span><span class="o">=</span><span class="p">(</span><span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">centerx</span><span class="p">,</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">bottom</span> <span class="o">+</span> <span class="mi">10</span><span class="p">))</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">info_text</span><span class="p">,</span> <span class="n">info_rect</span><span class="p">)</span>
+
+        <span class="c1"># Кнопка запуска игры</span>
+        <span class="n">start_btn</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">150</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+        <span class="n">is_hovered</span> <span class="o">=</span> <span class="n">start_btn</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">pygame</span><span class="o">.</span><span class="n">mouse</span><span class="o">.</span><span class="n">get_pos</span><span class="p">())</span>
+        <span class="n">start_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_hover_color</span> <span class="k">if</span> <span class="n">is_hovered</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">button_color</span>
+
+        <span class="c1"># Тень кнопки запуска</span>
+        <span class="n">shadow_rect</span> <span class="o">=</span> <span class="n">start_btn</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">shadow_rect</span><span class="o">.</span><span class="n">x</span> <span class="o">+=</span> <span class="mi">5</span>
+        <span class="n">shadow_rect</span><span class="o">.</span><span class="n">y</span> <span class="o">+=</span> <span class="mi">5</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="n">shadow_rect</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+        <span class="c1"># Основная кнопка запуска</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="n">start_color</span><span class="p">,</span> <span class="n">start_btn</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+        <span class="c1"># Обводка кнопки запуска</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">accent_color</span><span class="p">,</span> <span class="n">start_btn</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="n">border_radius</span><span class="o">=</span><span class="mi">12</span><span class="p">)</span>
+
+        <span class="c1"># Текст кнопки запуска</span>
+        <span class="n">start_text</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">title_font</span><span class="o">.</span><span class="n">render</span><span class="p">(</span><span class="s1">&#39;ИГРАТЬ&#39;</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">text_color</span><span class="p">)</span>
+        <span class="n">start_rect</span> <span class="o">=</span> <span class="n">start_text</span><span class="o">.</span><span class="n">get_rect</span><span class="p">(</span><span class="n">center</span><span class="o">=</span><span class="n">start_btn</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="o">.</span><span class="n">blit</span><span class="p">(</span><span class="n">start_text</span><span class="p">,</span> <span class="n">start_rect</span><span class="p">)</span>
+
+        <span class="n">pygame</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">flip</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_draw_background</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Рисует фоновый узор.&quot;&quot;&quot;</span>
+        <span class="c1"># Простой узор из линий</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span><span class="p">,</span> <span class="mi">50</span><span class="p">):</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">line</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen</span><span class="p">,</span> <span class="p">(</span><span class="mi">40</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">60</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span><span class="p">,</span> <span class="n">i</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+
+<div class="viewcode-block" id="GameLauncher.handle_events">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameLauncher.handle_events">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">handle_events</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Обрабатывает события в лаунчере.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">pygame</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">get</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">QUIT</span><span class="p">:</span>
+                <span class="k">return</span> <span class="s1">&#39;quit&#39;</span>
+
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">KEYDOWN</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
+                    <span class="k">return</span> <span class="s1">&#39;quit&#39;</span>
+
+                <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">==</span> <span class="s1">&#39;name&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_RETURN</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">=</span> <span class="kc">None</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;player_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span>
+                    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_BACKSPACE</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+                    <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">key</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">K_ESCAPE</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">=</span> <span class="kc">None</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">20</span> <span class="ow">and</span> <span class="n">event</span><span class="o">.</span><span class="n">unicode</span><span class="o">.</span><span class="n">isprintable</span><span class="p">():</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span> <span class="o">+=</span> <span class="n">event</span><span class="o">.</span><span class="n">unicode</span>
+
+            <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">pygame</span><span class="o">.</span><span class="n">MOUSEBUTTONDOWN</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">button</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>  <span class="c1"># Левая кнопка мыши</span>
+                    <span class="n">mouse_pos</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">pos</span>
+
+                    <span class="c1"># Проверка поля ввода имени</span>
+                    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">name_input_rect</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">):</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">=</span> <span class="s1">&#39;name&#39;</span>
+                        <span class="k">return</span> <span class="s1">&#39;continue&#39;</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">editing_parameter</span> <span class="o">=</span> <span class="kc">None</span>
+
+                    <span class="c1"># Проверка кнопок параметров</span>
+                    <span class="k">for</span> <span class="n">button_group</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">buttons</span><span class="p">:</span>
+                        <span class="k">for</span> <span class="n">option</span> <span class="ow">in</span> <span class="n">button_group</span><span class="p">[</span><span class="s1">&#39;options&#39;</span><span class="p">]:</span>
+                            <span class="k">if</span> <span class="n">option</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">):</span>
+                                <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="n">option</span><span class="p">[</span><span class="s1">&#39;param&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">option</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span>
+                                <span class="k">return</span> <span class="s1">&#39;continue&#39;</span>
+
+                    <span class="c1"># Проверка кнопок предустановок</span>
+                    <span class="k">for</span> <span class="n">preset_btn</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">preset_buttons</span><span class="p">:</span>
+                        <span class="k">if</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;rect&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">):</span>
+                            <span class="n">preset</span> <span class="o">=</span> <span class="n">preset_btn</span><span class="p">[</span><span class="s1">&#39;preset&#39;</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">preset</span><span class="p">[</span><span class="s1">&#39;width&#39;</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">preset</span><span class="p">[</span><span class="s1">&#39;height&#39;</span><span class="p">]</span>
+                            <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;snake_speed&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">preset</span><span class="p">[</span><span class="s1">&#39;speed&#39;</span><span class="p">]</span>
+                            <span class="c1"># grid_size и fps остаются фиксированными</span>
+                            <span class="k">return</span> <span class="s1">&#39;continue&#39;</span>
+
+                    <span class="c1"># Проверка кнопки запуска игры</span>
+                    <span class="n">start_btn</span> <span class="o">=</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Rect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">screen_width</span> <span class="o">//</span> <span class="mi">2</span> <span class="o">-</span> <span class="mi">150</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">screen_height</span> <span class="o">-</span> <span class="mi">100</span><span class="p">,</span> <span class="mi">300</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">start_btn</span><span class="o">.</span><span class="n">collidepoint</span><span class="p">(</span><span class="n">mouse_pos</span><span class="p">):</span>
+                        <span class="c1"># Обновляем имя игрока из поля ввода</span>
+                        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;player_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">player_name_input</span>
+                        <span class="k">return</span> <span class="s1">&#39;start&#39;</span>
+
+        <span class="k">return</span> <span class="s1">&#39;continue&#39;</span></div>
+
+
+<div class="viewcode-block" id="GameLauncher.run">
+<a class="viewcode-back" href="../../game/game_engine.html#game.game_engine.GameLauncher.run">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Запускает лаунчер и возвращает настройки игры.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Dict[str, Any]: Словарь с настройками игры.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">running</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">while</span> <span class="n">running</span><span class="p">:</span>
+            <span class="n">dt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">clock</span><span class="o">.</span><span class="n">tick</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span> <span class="o">/</span> <span class="mf">1000.0</span>
+
+            <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">handle_events</span><span class="p">()</span>
+
+            <span class="k">if</span> <span class="n">result</span> <span class="o">==</span> <span class="s1">&#39;quit&#39;</span><span class="p">:</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="kc">None</span>
+            <span class="k">elif</span> <span class="n">result</span> <span class="o">==</span> <span class="s1">&#39;start&#39;</span><span class="p">:</span>
+                <span class="n">pygame</span><span class="o">.</span><span class="n">quit</span><span class="p">()</span>
+                <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">draw</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="kc">None</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права 2024, Ваше имя. </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

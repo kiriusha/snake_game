@@ -1,0 +1,362 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game.snake &mdash; документация Змейка 1.0</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=9ca2116e"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/translations.js?v=cd1d70c9"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="../../genindex.html" />
+    <link rel="search" title="Поиск" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Змейка
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Модули</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Змейка</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Код модуля</a></li>
+      <li class="breadcrumb-item active">game.snake</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Исходный код game.snake</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Класс для змейки в игре.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Optional</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">pygame</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">.base</span><span class="w"> </span><span class="kn">import</span> <span class="n">GameObject</span>
+
+
+<div class="viewcode-block" id="Snake">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake">[документация]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Snake</span><span class="p">(</span><span class="n">GameObject</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Представляет змейку в игре.</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        body (List[GameObject]): Сегменты тела змейки.</span>
+<span class="sd">        direction (Tuple[int, int]): Текущее направление движения.</span>
+<span class="sd">        next_direction (Tuple[int, int]): Следующее направление.</span>
+<span class="sd">        grow_pending (int): Количество сегментов для добавления.</span>
+<span class="sd">        body_colors (List[Tuple[int, int, int]]): Цвета для чередования.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">DIRECTIONS</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_UP</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_DOWN</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_LEFT</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_RIGHT</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_w</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_s</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_a</span><span class="p">:</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">K_d</span><span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+    <span class="p">}</span>
+
+<div class="viewcode-block" id="Snake.__init__">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.__init__">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">y</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">20</span><span class="p">,</span>
+                 <span class="n">length</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
+                 <span class="n">head_color</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span>
+                 <span class="n">body_colors</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Инициализирует змейку.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            x (int): Начальная координата X головы.</span>
+<span class="sd">            y (int): Начальная координата Y головы.</span>
+<span class="sd">            size (int): Размер сегмента.</span>
+<span class="sd">            length (int): Начальная длина.</span>
+<span class="sd">            head_color (Tuple[int, int, int]): Цвет головы.</span>
+<span class="sd">            body_colors (List[Tuple[int, int, int]]): Цвета для чередования.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">head_color</span><span class="p">)</span>
+
+        <span class="c1"># Цвета тела (по умолчанию два оттенка зеленого)</span>
+        <span class="k">if</span> <span class="n">body_colors</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">body_colors</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">100</span><span class="p">),</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">50</span><span class="p">)]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body_colors</span> <span class="o">=</span> <span class="n">body_colors</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># Начальное направление вправо</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">next_direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grow_pending</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="c1"># Создаем тело змейки</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">GameObject</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">length</span><span class="p">):</span>
+            <span class="c1"># Чередуем цвета для сегментов</span>
+            <span class="n">color_index</span> <span class="o">=</span> <span class="p">(</span><span class="n">i</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body_colors</span><span class="p">)</span>
+            <span class="n">segment_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_colors</span><span class="p">[</span><span class="n">color_index</span><span class="p">]</span>
+
+            <span class="n">segment</span> <span class="o">=</span> <span class="n">GameObject</span><span class="p">(</span><span class="n">x</span> <span class="o">-</span> <span class="n">i</span> <span class="o">*</span> <span class="n">size</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">segment_color</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">segment</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Snake.change_direction">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.change_direction">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">change_direction</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Изменяет направление движения.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (int): Код клавиши.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True если направление изменено, иначе False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">DIRECTIONS</span><span class="p">:</span>
+            <span class="n">new_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">DIRECTIONS</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+            <span class="c1"># Не позволяем развернуться на 180 градусов</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">new_dir</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">or</span>
+                <span class="n">new_dir</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">next_direction</span> <span class="o">=</span> <span class="n">new_dir</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Snake.move">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.move">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">move</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Перемещает змейку на один шаг.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">next_direction</span>
+
+        <span class="c1"># Перемещаем тело</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="c1"># Сдвигаем все сегменты тела</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">):</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">x</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">y</span>
+
+            <span class="c1"># Первый сегмент тела занимает позицию головы</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span>
+
+        <span class="c1"># Перемещаем голову</span>
+        <span class="n">dx</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span>
+        <span class="n">dy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span>
+        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">move</span><span class="p">(</span><span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">)</span>
+
+        <span class="c1"># Добавляем новые сегменты если нужно</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">grow_pending</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_grow</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">grow_pending</span> <span class="o">-=</span> <span class="mi">1</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_grow</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Добавляет новый сегмент к телу.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="n">last_segment</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">last_segment</span> <span class="o">=</span> <span class="bp">self</span>
+
+        <span class="c1"># Чередуем цвета для нового сегмента</span>
+        <span class="n">color_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body_colors</span><span class="p">)</span>
+        <span class="n">new_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">body_colors</span><span class="p">[</span><span class="n">color_index</span><span class="p">]</span>
+
+        <span class="n">new_segment</span> <span class="o">=</span> <span class="n">GameObject</span><span class="p">(</span>
+            <span class="n">last_segment</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">last_segment</span><span class="o">.</span><span class="n">y</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">width</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+            <span class="n">new_color</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">new_segment</span><span class="p">)</span>
+
+<div class="viewcode-block" id="Snake.grow">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.grow">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">grow</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">amount</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Запланировать рост змейки.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            amount (int): Количество сегментов для добавления.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">grow_pending</span> <span class="o">+=</span> <span class="n">amount</span></div>
+
+
+<div class="viewcode-block" id="Snake.check_self_collision">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.check_self_collision">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_self_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Проверяет столкновение головы с телом.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True если произошло столкновение, иначе False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">segment</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">:</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">check_collision</span><span class="p">(</span><span class="n">segment</span><span class="p">):</span>
+                <span class="k">return</span> <span class="kc">True</span>
+        <span class="k">return</span> <span class="kc">False</span></div>
+
+
+<div class="viewcode-block" id="Snake.check_wall_collision">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.check_wall_collision">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">check_wall_collision</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_x</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Проверяет столкновение со стенами.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            max_x (int): Ширина поля.</span>
+<span class="sd">            max_y (int): Высота поля.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            bool: True если произошло столкновение, иначе False.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">x</span> <span class="o">&gt;=</span> <span class="n">max_x</span> <span class="ow">or</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">y</span> <span class="o">&gt;=</span> <span class="n">max_y</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Snake.draw">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.draw">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">draw</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">surface</span><span class="p">:</span> <span class="n">pygame</span><span class="o">.</span><span class="n">Surface</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Отрисовывает всю змейку.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            surface (pygame.Surface): Поверхность для отрисовки.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># Отрисовываем тело с обводкой</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">segment</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">):</span>
+            <span class="c1"># Основной прямоугольник</span>
+            <span class="n">segment</span><span class="o">.</span><span class="n">draw</span><span class="p">(</span><span class="n">surface</span><span class="p">)</span>
+
+            <span class="c1"># Обводка сегмента</span>
+            <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+                <span class="n">surface</span><span class="p">,</span>
+                <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># Черная обводка</span>
+                <span class="n">segment</span><span class="o">.</span><span class="n">rect</span><span class="p">,</span>
+                <span class="mi">1</span>  <span class="c1"># Толщина обводки</span>
+            <span class="p">)</span>
+
+        <span class="c1"># Отрисовываем голову с более толстой обводкой</span>
+        <span class="n">head_rect</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">rect</span>
+
+        <span class="c1"># Основной цвет головы</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">color</span><span class="p">,</span> <span class="n">head_rect</span><span class="p">)</span>
+
+        <span class="c1"># Толстая обводка для головы</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">rect</span><span class="p">(</span>
+            <span class="n">surface</span><span class="p">,</span>
+            <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>  <span class="c1"># Черная обводка</span>
+            <span class="n">head_rect</span><span class="p">,</span>
+            <span class="mi">2</span>  <span class="c1"># Более толстая обводка</span>
+        <span class="p">)</span>
+
+        <span class="c1"># Глаза змейки (для лучшей видимости направления)</span>
+        <span class="n">eye_size</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">//</span> <span class="mi">5</span>
+        <span class="n">eye_offset</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">width</span> <span class="o">//</span> <span class="mi">4</span>
+
+        <span class="c1"># Расположение глаз в зависимости от направления</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># Вправо</span>
+            <span class="n">left_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">)</span>
+            <span class="n">right_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">):</span>  <span class="c1"># Влево</span>
+            <span class="n">left_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">)</span>
+            <span class="n">right_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">direction</span> <span class="o">==</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">):</span>  <span class="c1"># Вниз</span>
+            <span class="n">left_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">)</span>
+            <span class="n">right_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">bottom</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># Вверх</span>
+            <span class="n">left_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">left</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">)</span>
+            <span class="n">right_eye</span> <span class="o">=</span> <span class="p">(</span><span class="n">head_rect</span><span class="o">.</span><span class="n">right</span> <span class="o">-</span> <span class="n">eye_offset</span><span class="p">,</span> <span class="n">head_rect</span><span class="o">.</span><span class="n">top</span> <span class="o">+</span> <span class="n">eye_offset</span><span class="p">)</span>
+
+        <span class="c1"># Рисуем глаза</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">left_eye</span><span class="p">,</span> <span class="n">eye_size</span><span class="p">)</span>
+        <span class="n">pygame</span><span class="o">.</span><span class="n">draw</span><span class="o">.</span><span class="n">circle</span><span class="p">(</span><span class="n">surface</span><span class="p">,</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="n">right_eye</span><span class="p">,</span> <span class="n">eye_size</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Snake.get_length">
+<a class="viewcode-back" href="../../game/snake.html#game.snake.Snake.get_length">[документация]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_length</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Возвращает текущую длину змейки.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            int: Длина змейки (голова + тело).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">body</span><span class="p">)</span></div>
+</div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права 2024, Ваше имя. </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

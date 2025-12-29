@@ -1,0 +1,322 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="ru" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>game.game_engine &mdash; документация Змейка 1.0</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=9ca2116e"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/translations.js?v=cd1d70c9"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Алфавитный указатель" href="../genindex.html" />
+    <link rel="search" title="Поиск" href="../search.html" />
+    <link rel="next" title="game.snake" href="snake.html" />
+    <link rel="prev" title="Модули" href="../modules.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Змейка
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Поиск в документации" aria-label="Поиск в документации" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Меню навигации">
+              <p class="caption" role="heading"><span class="caption-text">Содержание:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="../modules.html">Модули</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">game.game_engine</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#game.game_engine.GameEngine"><code class="docutils literal notranslate"><span class="pre">GameEngine</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.width"><code class="docutils literal notranslate"><span class="pre">GameEngine.width</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.height"><code class="docutils literal notranslate"><span class="pre">GameEngine.height</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.grid_size"><code class="docutils literal notranslate"><span class="pre">GameEngine.grid_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.fps"><code class="docutils literal notranslate"><span class="pre">GameEngine.fps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.snake_speed"><code class="docutils literal notranslate"><span class="pre">GameEngine.snake_speed</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.player_name"><code class="docutils literal notranslate"><span class="pre">GameEngine.player_name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.fullscreen"><code class="docutils literal notranslate"><span class="pre">GameEngine.fullscreen</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.__init__"><code class="docutils literal notranslate"><span class="pre">GameEngine.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.handle_events"><code class="docutils literal notranslate"><span class="pre">GameEngine.handle_events()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.update"><code class="docutils literal notranslate"><span class="pre">GameEngine.update()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.draw"><code class="docutils literal notranslate"><span class="pre">GameEngine.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameEngine.run"><code class="docutils literal notranslate"><span class="pre">GameEngine.run()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#game.game_engine.GameLauncher"><code class="docutils literal notranslate"><span class="pre">GameLauncher</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameLauncher.__init__"><code class="docutils literal notranslate"><span class="pre">GameLauncher.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameLauncher.draw"><code class="docutils literal notranslate"><span class="pre">GameLauncher.draw()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameLauncher.handle_events"><code class="docutils literal notranslate"><span class="pre">GameLauncher.handle_events()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#game.game_engine.GameLauncher.run"><code class="docutils literal notranslate"><span class="pre">GameLauncher.run()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="snake.html">game.snake</a></li>
+<li class="toctree-l2"><a class="reference internal" href="apple.html">game.apple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="base.html">game.base</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">game.utils</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Меню навигации для мобильных устройств" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Змейка</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Навигация по страницам">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../modules.html">Модули</a></li>
+      <li class="breadcrumb-item active">game.game_engine</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/game/game_engine.rst.txt" rel="nofollow"> Просмотреть исходный код страницы</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-game.game_engine">
+<span id="game-game-engine"></span><h1>game.game_engine<a class="headerlink" href="#module-game.game_engine" title="Ссылка на этот заголовок"></a></h1>
+<p>Игровой движок для Змейки.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game.game_engine.</span></span><span class="sig-name descname"><span class="pre">GameEngine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snake_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Игрок'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullscreen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/game/game_engine.html#GameEngine"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameEngine" title="Ссылка на это определение"></a></dt>
+<dd><p>Базовые классы: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Управляет игровым процессом.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.width">
+<span class="sig-name descname"><span class="pre">width</span></span><a class="headerlink" href="#game.game_engine.GameEngine.width" title="Ссылка на это определение"></a></dt>
+<dd><p>Ширина игрового поля.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.height">
+<span class="sig-name descname"><span class="pre">height</span></span><a class="headerlink" href="#game.game_engine.GameEngine.height" title="Ссылка на это определение"></a></dt>
+<dd><p>Высота игрового поля.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.grid_size">
+<span class="sig-name descname"><span class="pre">grid_size</span></span><a class="headerlink" href="#game.game_engine.GameEngine.grid_size" title="Ссылка на это определение"></a></dt>
+<dd><p>Размер сетки.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.fps">
+<span class="sig-name descname"><span class="pre">fps</span></span><a class="headerlink" href="#game.game_engine.GameEngine.fps" title="Ссылка на это определение"></a></dt>
+<dd><p>Кадров в секунду.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.snake_speed">
+<span class="sig-name descname"><span class="pre">snake_speed</span></span><a class="headerlink" href="#game.game_engine.GameEngine.snake_speed" title="Ссылка на это определение"></a></dt>
+<dd><p>Скорость движения змейки.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.player_name">
+<span class="sig-name descname"><span class="pre">player_name</span></span><a class="headerlink" href="#game.game_engine.GameEngine.player_name" title="Ссылка на это определение"></a></dt>
+<dd><p>Имя игрока.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.fullscreen">
+<span class="sig-name descname"><span class="pre">fullscreen</span></span><a class="headerlink" href="#game.game_engine.GameEngine.fullscreen" title="Ссылка на это определение"></a></dt>
+<dd><p>Режим полноэкранный или оконный.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">800</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">600</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">60</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">snake_speed</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">player_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Игрок'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fullscreen</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/game/game_engine.html#GameEngine.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameEngine.__init__" title="Ссылка на это определение"></a></dt>
+<dd><p>Инициализирует игровой движок.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>width</strong> (<em>int</em>) – Ширина поля.</p></li>
+<li><p><strong>height</strong> (<em>int</em>) – Высота поля.</p></li>
+<li><p><strong>grid_size</strong> (<em>int</em>) – Размер сетки.</p></li>
+<li><p><strong>fps</strong> (<em>int</em>) – Кадров в секунду.</p></li>
+<li><p><strong>snake_speed</strong> (<em>int</em>) – Скорость змейки.</p></li>
+<li><p><strong>player_name</strong> (<em>str</em>) – Имя игрока.</p></li>
+<li><p><strong>fullscreen</strong> (<em>bool</em>) – Режим полноэкранный.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.handle_events">
+<span class="sig-name descname"><span class="pre">handle_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="reference internal" href="../_modules/game/game_engine.html#GameEngine.handle_events"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameEngine.handle_events" title="Ссылка на это определение"></a></dt>
+<dd><p>Обрабатывает события.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True если игра должна продолжаться, иначе False.</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dt</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/game/game_engine.html#GameEngine.update"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameEngine.update" title="Ссылка на это определение"></a></dt>
+<dd><p>Обновляет игровое состояние.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Параметры<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>dt</strong> (<em>float</em>) – Время с последнего обновления в секундах.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/game/game_engine.html#GameEngine.draw"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameEngine.draw" title="Ссылка на это определение"></a></dt>
+<dd><p>Отрисовывает игровое поле.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameEngine.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="reference internal" href="../_modules/game/game_engine.html#GameEngine.run"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameEngine.run" title="Ссылка на это определение"></a></dt>
+<dd><p>Запускает основной игровой цикл.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="game.game_engine.GameLauncher">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">game.game_engine.</span></span><span class="sig-name descname"><span class="pre">GameLauncher</span></span><a class="reference internal" href="../_modules/game/game_engine.html#GameLauncher"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameLauncher" title="Ссылка на это определение"></a></dt>
+<dd><p>Базовые классы: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Класс для настройки и запуска игры с меню выбора параметров.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameLauncher.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/game/game_engine.html#GameLauncher.__init__"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameLauncher.__init__" title="Ссылка на это определение"></a></dt>
+<dd><p>Инициализирует лаунчер игры.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameLauncher.draw">
+<span class="sig-name descname"><span class="pre">draw</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/game/game_engine.html#GameLauncher.draw"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameLauncher.draw" title="Ссылка на это определение"></a></dt>
+<dd><p>Отрисовывает экран настройки параметров.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameLauncher.handle_events">
+<span class="sig-name descname"><span class="pre">handle_events</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/game/game_engine.html#GameLauncher.handle_events"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameLauncher.handle_events" title="Ссылка на это определение"></a></dt>
+<dd><p>Обрабатывает события в лаунчере.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="game.game_engine.GameLauncher.run">
+<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../_modules/game/game_engine.html#GameLauncher.run"><span class="viewcode-link"><span class="pre">[исходный</span> <span class="pre">код]</span></span></a><a class="headerlink" href="#game.game_engine.GameLauncher.run" title="Ссылка на это определение"></a></dt>
+<dd><p>Запускает лаунчер и возвращает настройки игры.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Результат<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Словарь с настройками игры.</p>
+</dd>
+<dt class="field-even">Тип результата<span class="colon">:</span></dt>
+<dd class="field-even"><p>Dict[str, Any]</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Нижняя область">
+        <a href="../modules.html" class="btn btn-neutral float-left" title="Модули" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Предыдущая</a>
+        <a href="snake.html" class="btn btn-neutral float-right" title="game.snake" accesskey="n" rel="next">Следующая <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Авторские права 2024, Ваше имя. </p>
+  </div>
+
+  Собрано при помощи <a href="https://www.sphinx-doc.org/">Sphinx</a> с использованием
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">темы,</a>
+    предоставленной <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
