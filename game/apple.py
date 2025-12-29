@@ -51,7 +51,7 @@ class Apple(GameObject):
             Apple: Созданное яблоко.
         """
         if color is None:
-            color = (255, 50, 50)  # Красный цвет по умолчанию
+            color = (255, 50, 50)
 
         cols = max_x // grid_size
         rows = max_y // grid_size

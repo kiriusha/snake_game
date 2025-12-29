@@ -3,7 +3,7 @@
 """
 
 import pygame
-from typing import Tuple, Optional
+from typing import Tuple
 
 
 class GameObject:

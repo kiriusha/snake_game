@@ -2,7 +2,7 @@
 Класс для змейки в игре.
 """
 
-from typing import List, Tuple, Optional
+from typing import List, Tuple
 import pygame
 from .base import GameObject
 
@@ -47,7 +47,7 @@ class Snake(GameObject):
         """
         super().__init__(x, y, size, size, head_color)
 
-        # Цвета тела (по умолчанию два оттенка зеленого)
+        # Цвета тела
         if body_colors is None:
             body_colors = [(100, 200, 100), (50, 180, 50)]
         self.body_colors = body_colors
@@ -201,7 +201,7 @@ class Snake(GameObject):
             2  # Более толстая обводка
         )
 
-        # Глаза змейки (для лучшей видимости направления)
+        # Глаза змейки
         eye_size = self.width // 5
         eye_offset = self.width // 4
 

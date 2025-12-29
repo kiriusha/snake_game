@@ -63,9 +63,6 @@ def parse_arguments() -> Dict[str, Any]:
         help='Высота игрового поля (300-1500, по умолчанию: 600)'
     )
 
-    # Убраны grid_size и fps, так как они теперь фиксированы
-    # grid_size фиксирован на 40
-    # fps фиксирован на 60
 
     args = parser.parse_args()
 

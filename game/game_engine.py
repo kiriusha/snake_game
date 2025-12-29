@@ -3,9 +3,8 @@
 """
 
 import pygame
-import sys
 from datetime import datetime
-from typing import Optional, Tuple, Dict, Any
+from typing import Dict, Any
 from .snake import Snake
 from .apple import Apple
 
@@ -49,7 +48,7 @@ class GameEngine:
         # Сохраняем РЕАЛЬНЫЕ размеры игрового поля из настроек
         self.original_width = width
         self.original_height = height
-        self.grid_size = grid_size  # Фиксированный размер сетки 40
+        self.grid_size = grid_size
 
         # Выравниваем размеры под сетку
         self.game_width = (self.original_width // self.grid_size) * self.grid_size
@@ -60,7 +59,7 @@ class GameEngine:
         self.display_width = self.game_width
         self.display_height = self.game_height + self.ui_height
 
-        self.fps = fps  # Фиксированная частота кадров 60
+        self.fps = fps
         self.snake_speed = snake_speed
         self.player_name = player_name
 
@@ -77,7 +76,7 @@ class GameEngine:
         pygame.display.set_caption(f'Змейка - {self.player_name}')
         self.clock = pygame.time.Clock()
 
-        # Поверхность для отрисовки игры (с фиксированным размером ИЗ НАСТРОЕК)
+        # Поверхность для отрисовки игры
         self.game_surface = pygame.Surface((self.display_width, self.display_height))
 
         # Загружаем шрифты
@@ -90,16 +89,16 @@ class GameEngine:
             self.big_font = pygame.font.SysFont('arial', 42)
             self.title_font = pygame.font.SysFont('arial', 72)
 
-        # Цвета игрового поля (шахматный порядок)
-        self.color1 = pygame.Color('#4682B4')  # Стальной синий
-        self.color2 = pygame.Color('#B0E0E6')  # Голубой порошок
+        # Цвета игрового поля
+        self.color1 = pygame.Color('#4682B4')
+        self.color2 = pygame.Color('#B0E0E6')
 
         # Цвета UI
-        self.ui_bg_color = pygame.Color('#2C3E50')  # Темно-синий
-        self.ui_text_color = pygame.Color('#ECF0F1')  # Светло-серый
-        self.ui_accent_color = pygame.Color('#3498DB')  # Голубой
-        self.ui_button_color = pygame.Color('#1ABC9C')  # Бирюзовый
-        self.ui_button_hover_color = pygame.Color('#16A085')  # Темный бирюзовый
+        self.ui_bg_color = pygame.Color('#2C3E50')
+        self.ui_text_color = pygame.Color('#ECF0F1')
+        self.ui_accent_color = pygame.Color('#3498DB')
+        self.ui_button_color = pygame.Color('#1ABC9C')
+        self.ui_button_hover_color = pygame.Color('#16A085')
 
         self.score = 0
         self.high_score = 0
@@ -116,10 +115,10 @@ class GameEngine:
         start_x = (self.game_width // 2) // self.grid_size * self.grid_size
         start_y = (self.game_height // 2) // self.grid_size * self.grid_size
 
-        # Цвета змейки (зеленая гамма)
-        head_color = pygame.Color('#00FF00')  # Ярко-зеленый
-        body_color1 = pygame.Color('#32CD32')  # Лаймовый зеленый
-        body_color2 = pygame.Color('#228B22')  # Лесной зеленый
+        # Цвета змейки
+        head_color = pygame.Color('#00FF00')
+        body_color1 = pygame.Color('#32CD32')
+        body_color2 = pygame.Color('#228B22')
 
         self.snake = Snake(
             x=start_x,
@@ -127,10 +126,10 @@ class GameEngine:
             size=self.grid_size,
             length=3,
             head_color=head_color,
-            body_colors=[body_color1, body_color2]  # Чередующиеся цвета
+            body_colors=[body_color1, body_color2]
         )
 
-        # Создаем яблоко (ИСПОЛЬЗУЕМ game_width и game_height)
+        # Создаем яблоко
         self.apple = Apple.create_random(
             max_x=self.game_width,
             max_y=self.game_height,
@@ -212,7 +211,7 @@ class GameEngine:
                 if self.score > self.high_score:
                     self.high_score = self.score
 
-            # Проверяем столкновения (ИСПОЛЬЗУЕМ game_width и game_height)
+            # Проверяем столкновения
             if (self.snake.check_self_collision() or
                 self.snake.check_wall_collision(self.game_width, self.game_height)):
                 self.game_over = True
@@ -247,7 +246,7 @@ class GameEngine:
         # Очищаем игровую поверхность
         self.game_surface.fill((0, 0, 0))
 
-        # Рисуем игровое поле (шахматный порядок)
+        # Рисуем игровое поле
         self._draw_game_board()
 
         # Рисуем игровые объекты
@@ -301,7 +300,7 @@ class GameEngine:
 
         for row in range(rows):
             for col in range(cols):
-                # Определяем цвет клетки (шахматный порядок)
+                # Определяем цвет клетки
                 if (row + col) % 2 == 0:
                     color = self.color1
                 else:
@@ -316,14 +315,14 @@ class GameEngine:
                 )
                 pygame.draw.rect(self.game_surface, color, rect)
 
-                # Добавляем легкую обводку
+                # Добавляем обводку
                 pygame.draw.rect(self.game_surface, (40, 40, 40), rect, 1)
 
     def _draw_ui_panel(self) -> None:
         """
         Рисует панель статистики.
         """
-        # Фон панели статистики (ИСПОЛЬЗУЕМ display_width)
+        # Фон панели статистики
         ui_rect = pygame.Rect(0, self.game_height, self.display_width, self.ui_height)
         pygame.draw.rect(self.game_surface, self.ui_bg_color, ui_rect)
 
@@ -347,7 +346,7 @@ class GameEngine:
         )
         self.game_surface.blit(speed_text, (self.display_width // 3, y_offset))
 
-        # Размер поля (показываем РЕАЛЬНЫЕ размеры)
+        # Размер поля
         field_text = self.font.render(
             f'Поле: {self.original_width}x{self.original_height}', True, self.ui_text_color
         )
@@ -372,14 +371,13 @@ class GameEngine:
         )
         self.game_surface.blit(length_text, (2 * self.display_width // 3, y_offset))
 
-        # Убраны подсказки по управлению
 
     def _draw_messages(self) -> None:
         """
         Рисует сообщения поверх игрового поля.
         """
         if self.paused:
-            # Полупрозрачный фон (ИСПОЛЬЗУЕМ game_width и game_height)
+            # Полупрозрачный фон
             overlay = pygame.Surface((self.game_width, self.game_height), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 150))  # Полупрозрачный черный
             self.game_surface.blit(overlay, (0, 0))
@@ -396,7 +394,7 @@ class GameEngine:
             self.game_surface.blit(hint_text, hint_rect)
 
         elif self.game_over:
-            # Полупрозрачный фон (ИСПОЛЬЗУЕМ game_width и game_height)
+            # Полупрозрачный фон
             overlay = pygame.Surface((self.game_width, self.game_height), pygame.SRCALPHA)
             overlay.fill((0, 0, 0, 150))  # Полупрозрачный черный
             self.game_surface.blit(overlay, (0, 0))
@@ -455,11 +453,11 @@ class GameLauncher:
         self.config = {
             'width': 800,
             'height': 600,
-            'grid_size': 40,  # Фиксированный размер сетки 40
-            'fps': 60,  # Фиксированная частота кадров 60
+            'grid_size': 40,
+            'fps': 60,
             'snake_speed': 10,
             'player_name': 'Игрок',
-            'fullscreen': True  # По умолчанию полноэкранный режим
+            'fullscreen': False
         }
 
         # Оконный режим для лаунчера
@@ -524,8 +522,6 @@ class GameLauncher:
         button_height = min(50, self.screen_height // 18)
         spacing = min(80, self.screen_height // 12)
 
-        # Только три параметра: ширина, высота и скорость
-        # Убраны: размер сетки (фиксирован 40) и частота кадров (фиксирована 60)
         parameters = [
             ('ШИРИНА ПОЛЯ:', 'width', ['400', '600', '800', '1000', '1200', '1400']),
             ('ВЫСОТА ПОЛЯ:', 'height', ['300', '400', '600', '800', '900', '1000']),
@@ -625,7 +621,7 @@ class GameLauncher:
                     self.button_hover_color if is_hovered else self.button_color
                 )
 
-                # Рисуем кнопку с тенью
+                # Рисуем кнопку
                 shadow_rect = option['rect'].copy()
                 shadow_rect.x += 3
                 shadow_rect.y += 3
@@ -697,7 +693,6 @@ class GameLauncher:
 
     def _draw_background(self):
         """Рисует фоновый узор."""
-        # Простой узор из линий
         for i in range(0, self.screen_width, 50):
             pygame.draw.line(self.screen, (40, 50, 60), (i, 0), (i, self.screen_height), 1)
         for i in range(0, self.screen_height, 50):
@@ -750,7 +745,6 @@ class GameLauncher:
                             self.config['width'] = preset['width']
                             self.config['height'] = preset['height']
                             self.config['snake_speed'] = preset['speed']
-                            # grid_size и fps остаются фиксированными
                             return 'continue'
 
                     # Проверка кнопки запуска игры

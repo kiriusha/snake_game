@@ -228,16 +228,6 @@ def open_in_browser(filepath):
 def main():
     """Основная функция."""
 
-    # Проверяем наличие Sphinx
-    try:
-        import sphinx
-        print(f"Sphinx установлен: {sphinx.__version__}")
-    except ImportError:
-        print("✗ Sphinx не установлен")
-        print("Установите: pip install sphinx sphinx-rtd-theme")
-        return
-
-    # Спрашиваем что делать
     print("\nВыберите действие:")
     print("1. Настроить структуру документации")
     print("2. Сгенерировать HTML-документацию")
